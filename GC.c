@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#define STACK_MAX 256
-#define INIT_OBJ_NUM_MAX 8
-
-typedef enum{
-	stack_overflow,
-	stack_underflow,
-	not_error
-} error_code;
+#include "GC.h"
 
 //strange - baaad
 void assert_errors(int cond, error_code err){
@@ -22,6 +12,9 @@ void assert_errors(int cond, error_code err){
 }
 
 void* s_malloc(size_t n){
+    #ifdef _DEBUG_
+		printf("malloc\n");
+	#endif
     void *p = malloc(n);
     if (p == NULL) {
         fprintf(stderr, "Fatal: failed to allocate %zu bytes.\n", n);
@@ -30,46 +23,32 @@ void* s_malloc(size_t n){
     return p;
 }
 
-typedef enum{
-	OBJ_INT,
-	OBJ_STR
-} StandartType;
+void s_free(void* ptr){
+	#ifdef _DEBUG_
+		printf("free\n");
+	#endif
+    if (ptr == NULL) {
+        fprintf(stderr, "trying to free NULL.\n");
+		exit(2);
+    }
+    free(ptr);
+}
 
-typedef struct sObject{
-	StandartType type;
-	unsigned char marked;
-
-	struct sObject* next;
-  // copypast - baaad
-	union{
-		int int_value;
-		char* str_value;
-  	} value;
-} Object;
-
-typedef struct{
-	Object* stack[STACK_MAX];
-	int size;
-
-	Object* first_object;
-
-	int objects_counter;
-
-	int max_objects;
-} VM;
 
 //void pointer input looks dangerous...
-Object* new_obj_standart_type(VM* vm, StandartType input_type){
+Object* new_obj_standart_type(VM* vm, StandartType input_type, void* value_container){
 	Object* obj = (Object*)s_malloc(sizeof(StandartType));
-	
 	obj -> type = input_type;
-	/*if(input_type == OBJ_STR)
+	if(input_type == OBJ_STR)
 		(*obj).value.str_value = (char*) value_container;
 	else if(input_type == OBJ_INT)
-		(*obj).value.int_value = *(int*) value_container;
-	*/
+		(*obj).value.int_value = ((int*) value_container);
+	else if(input_type == HARD_TYPE)
+		(*obj).value.undefined_struct = value_container;
+	
 	obj -> marked = 0;
 	obj -> next = vm -> first_object;
+
 	vm -> first_object = obj;
 	vm -> objects_counter++;
 	
@@ -90,9 +69,8 @@ void push_vm(VM* vm, Object* input_value){
 	vm -> stack[vm -> size++] = input_value;
 }
 
-void pushChar(VM* vm, char* str){
-	Object* obj = new_obj_standart_type(vm, OBJ_STR);
-	obj -> value.str_value = str;
+void push_entity(VM* vm, StandartType input_type, void* value){
+	Object* obj = new_obj_standart_type(vm, input_type, value);
 	push_vm(vm, obj);
 }
 
@@ -123,7 +101,7 @@ void vm_walkthrough(VM* vm){
 			//if(obj -> next == NULL)
 			//	return;
 			obj = obj -> next;
-			free(temp);
+			s_free(temp);
 			vm -> objects_counter--;
 		}	
 		else{
@@ -148,19 +126,4 @@ void free_vm(VM* vm){
 	vm -> size = 0;
 	GC(vm);
 	free(vm);
-}
-
-int main(){
-	VM* virual_machine = new_vm(3);
-	printf("size is %d\n", virual_machine -> size);
-	const char* const message = "putin molodec politik lider i boec";
-	pushChar(virual_machine, (char*)message);
-	pushChar(virual_machine, (char*)message);
-	pushChar(virual_machine, (char*)message);
-	
-	printf("%s\n", pop_vm(virual_machine) -> value);
-	//mark_all(virual_machine);
-	//vm_walkthrough(virual_machine);
-	free_vm(virual_machine);
-	printf("----------------\n");
 }
