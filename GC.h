@@ -8,13 +8,6 @@
 #define INIT_OBJ_NUM_MAX 8
 
 typedef enum{
-	stack_overflow,
-	stack_underflow,
-	not_error
-} error_code;
-
-
-typedef enum{
 	OBJ_INT,
 	OBJ_STR,
 	HARD_TYPE
@@ -44,10 +37,6 @@ typedef struct{
 	int max_objects;
 } VM;
 
-
-void assert_errors(int cond, error_code err);
-void* s_malloc(size_t n);
-void s_free(void* ptr);
 Object* new_obj_standart_type(VM* vm, StandartType input_type, void* value_container);
 VM* new_vm(int start_size);
 void push_vm(VM* vm, Object* input_value);
