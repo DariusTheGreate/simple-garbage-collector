@@ -14,10 +14,19 @@ typedef struct some_type
 	void* entity;
 } some_type;
 
+void print_variables_list(Node* lst){
+	if(lst == NULL)
+		return;
+	if(lst -> value != NULL)
+		printf("%d\n",*(int*)((type_wrapper*)(lst -> value)) -> data);
+	print_variables_list(lst -> next);
+}
+
 int main(){
 	List* variables = parser((char*)"test.bla");
-	printf("\n%d\n", *(int*)(((type_wrapper*)(variables -> start ->  next -> value)) -> data));
-	//print_list(variables -> start);
+	//printf("\n%d\n", *(int*)(((type_wrapper*)(variables -> start ->  next -> value)) -> data));
+	//printf("%d\n", *(int*)((type_wrapper*)(variables -> start -> next -> next -> value)) -> data);
+	print_variables_list(variables -> start);
 	VM* virual_machine = new_vm(3);
 	//printf("size is %d\n", virual_machine -> size);
 	const char* const message = "putin molodec politik lider i boec";

@@ -1,11 +1,11 @@
 create(int a {12});
 create(int bla {122223});
-create(int cvas {12});
+create(int cvas {4});
 create(int cs   {1ssssss2});
 create(int  cvassssssssss {12});
-create(int cvasas {12});
-create(int cvasasd {12});
-create(int cvas {12});
+create(int cvasas {9});
+create(int cvasasd {8});
+create(int cvas {7});
 free(b);
 create(str txt {"bla bla vla"});
 free(a);

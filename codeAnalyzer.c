@@ -38,11 +38,10 @@ void parse_commands(Node* command, List* variables){
 	if(command -> tag == 1){
 		type_wrapper* var_com = (type_wrapper*)parse_creater((char*)command -> value);
 	 	push_list(variables -> start,  var_com, command -> tag);
-		printf("%d\n", *(int*)((var_com -> data)));
 	}
 	if(command -> tag == 0){
-		type_wrapper* var_com = (type_wrapper*)parse_creater((char*)command -> value);
-		parse_free((char*)command -> value);
+		//type_wrapper* var_com = (type_wrapper*)parse_creater((char*)command -> value);
+		//parse_free((char*)command -> value);
 	}
 	parse_commands(command -> next, variables);
 }
